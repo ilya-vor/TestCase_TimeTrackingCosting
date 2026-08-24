@@ -1,0 +1,16 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+[Dd]ebug/
+[Rr]elease/
+
+# Node / frontend
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Misc
+.DS_Store
+*.log
