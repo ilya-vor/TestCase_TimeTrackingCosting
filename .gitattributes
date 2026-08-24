@@ -1,0 +1,9 @@
+# Нормализация переводов строк для кросс-платформенной работы
+* text=auto
+
+# Скрипты для bash (в docker) — всегда LF
+*.sh text eol=lf
+
+# Файлы решения/проектов
+*.sln text eol=crlf
+*.csproj text eol=crlf
