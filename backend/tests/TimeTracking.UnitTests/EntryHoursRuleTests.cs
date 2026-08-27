@@ -4,7 +4,9 @@ using TimeTracking.Application.Rules;
 
 namespace TimeTracking.UnitTests;
 
-/// <summary>Правило 6: часы — положительные, кратные 0,5, не больше 24 за запись.</summary>
+/// <summary>
+/// Правило 6: часы — положительные, кратные 0,5, не больше 24 за запись
+/// </summary>
 public class EntryHoursRuleTests
 {
     [Fact]

@@ -4,8 +4,7 @@ using TimeTracking.Domain;
 namespace TimeTracking.Application.Common;
 
 /// <summary>
-/// Единственная точка доступа к хранилищу для обработчиков.
-/// Реализация — в Infrastructure (официальный драйвер MongoDB, без ORM).
+/// Точка доступа к хранилищу для обработчиков.
 /// </summary>
 public interface ITimeTrackingDb
 {

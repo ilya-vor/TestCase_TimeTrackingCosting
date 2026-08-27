@@ -5,7 +5,9 @@ using TimeTracking.Domain;
 
 namespace TimeTracking.UnitTests;
 
-/// <summary>Правило 4: в закрытом периоде записи нельзя создавать, изменять и удалять.</summary>
+/// <summary>
+/// Правило 4: в закрытом периоде записи нельзя создавать, изменять и удалять
+/// </summary>
 public class ClosedPeriodRuleTests
 {
     private static readonly DateTime Feb2026 = new(2026, 2, 10, 0, 0, 0, DateTimeKind.Utc);

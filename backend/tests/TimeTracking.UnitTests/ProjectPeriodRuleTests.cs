@@ -4,7 +4,9 @@ using TimeTracking.Application.Rules;
 
 namespace TimeTracking.UnitTests;
 
-/// <summary>Правило 5: дата записи попадает в период проекта.</summary>
+/// <summary>
+/// Правило 5: дата записи попадает в период проекта
+/// </summary>
 public class ProjectPeriodRuleTests
 {
     private static readonly DateTime Start = new(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);

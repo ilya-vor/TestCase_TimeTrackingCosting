@@ -8,17 +8,8 @@ namespace TimeTracking.Api;
 /// Маппинг исключений в ответы вида { code, message } с корректным HTTP-статусом.
 /// Бизнес-правила — 400/409, ошибки валидации входа — 400, неожиданные — 500 (без деталей).
 /// </summary>
-public class ExceptionHandlingMiddleware
+public class ExceptionHandlingMiddleware(RequestDelegate _next, ILogger<ExceptionHandlingMiddleware> _logger)
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-
-    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         try

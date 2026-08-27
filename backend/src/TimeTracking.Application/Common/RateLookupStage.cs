@@ -3,7 +3,7 @@ using MongoDB.Bson;
 namespace TimeTracking.Application.Common;
 
 /// <summary>
-/// $lookup-стадия, которая для каждой записи табеля находит ставку сотрудника,
+/// Стадия, которая для каждой записи табеля находит ставку сотрудника,
 /// действовавшую на дату записи. Резолв полностью на стороне MongoDB:
 /// смена ставки задним числом автоматически меняет результат отчёта и итогов.
 /// </summary>
@@ -37,7 +37,9 @@ public static class RateLookupStage
         { "as", "rate" }
     });
 
-    /// <summary>Распаковка результата lookup: без совпадения (нет ставки) — null, остальные записи сохраняются.</summary>
+    /// <summary>
+    /// Распаковка результата: без совпадения (нет ставки) — null, остальные записи сохраняются
+    /// </summary>
     public static BsonDocument Unwind() => new("$unwind", new BsonDocument
     {
         { "path", "$rate" },

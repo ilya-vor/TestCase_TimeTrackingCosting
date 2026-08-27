@@ -6,7 +6,7 @@ namespace TimeTracking.UnitTests;
 
 /// <summary>
 /// Правило 2 и 3: не больше 24 часов за календарный день по всем проектам,
-/// день с суммой больше 12 часов — переработка.
+/// день с суммой больше 12 часов — переработка
 /// </summary>
 public class DayHoursLimitRuleTests
 {
@@ -23,13 +23,13 @@ public class DayHoursLimitRuleTests
     [Fact]
     public void Total_exactly_24_is_allowed()
     {
-        DayHoursLimitRule.ValidateDayTotal(20, 4); // 24 ровно — можно
+        DayHoursLimitRule.ValidateDayTotal(20, 4);
     }
 
     [Fact]
     public void Total_below_24_is_allowed()
     {
-        DayHoursLimitRule.ValidateDayTotal(12, 8); // 20 — можно
+        DayHoursLimitRule.ValidateDayTotal(12, 8);
     }
 
     [Theory]

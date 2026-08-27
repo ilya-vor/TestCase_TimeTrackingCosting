@@ -2,7 +2,9 @@ using TimeTracking.Application.Common;
 
 namespace TimeTracking.Application.Rules;
 
-/// <summary>Правило 5: дата записи попадает в период проекта (не раньше начала, не позже окончания, если задано).</summary>
+/// <summary>
+/// Правило 5: дата записи попадает в период проекта (не раньше начала, не позже окончания, если задано).
+/// </summary>
 public static class ProjectPeriodRule
 {
     public static void ThrowIfOutside(DateTime date, DateTime start, DateTime? end)

@@ -6,12 +6,8 @@ using TimeTracking.Domain;
 
 namespace TimeTracking.Application.Entries;
 
-public class CreateTimeEntryCommandHandler : IRequestHandler<CreateTimeEntryCommand, TimeEntryRow>
+public class CreateTimeEntryCommandHandler(ITimeTrackingDb _db) : IRequestHandler<CreateTimeEntryCommand, TimeEntryRow>
 {
-    private readonly ITimeTrackingDb _db;
-
-    public CreateTimeEntryCommandHandler(ITimeTrackingDb db) => _db = db;
-
     public async Task<TimeEntryRow> Handle(CreateTimeEntryCommand command, CancellationToken ct)
     {
         var date = Dates.CalendarDateToUtc(command.Date);
@@ -33,7 +29,7 @@ public class CreateTimeEntryCommandHandler : IRequestHandler<CreateTimeEntryComm
             ProjectPeriodRule.ThrowIfOutside(date, project.Start, project.End);
             EmployeeRates.RequireOn(employee.Rates, date, employee.Name);
 
-            var dayTotal = await EntryService.SumDayHoursAsync(_db, session, employee.Id, date, token);
+            var dayTotal = await DayHoursAggregator.SumForDayAsync(_db, session, employee.Id, date, token);
             DayHoursLimitRule.ValidateDayTotal(dayTotal, command.Hours);
 
             var now = DateTime.UtcNow;
@@ -54,7 +50,7 @@ public class CreateTimeEntryCommandHandler : IRequestHandler<CreateTimeEntryComm
             await _db.TimeEntries.InsertOneAsync(session, created, cancellationToken: token);
         }, ct);
 
-        return await EntryService.BuildRowAsync(_db, null, created!, ct);
+        return await TimeEntryRowProjector.BuildWithLookupsAsync(_db, null, created!, ct);
     }
 }
 

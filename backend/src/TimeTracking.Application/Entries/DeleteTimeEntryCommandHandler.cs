@@ -6,12 +6,8 @@ using TimeTracking.Domain;
 
 namespace TimeTracking.Application.Entries;
 
-public class DeleteTimeEntryCommandHandler : IRequestHandler<DeleteTimeEntryCommand, Unit>
+public class DeleteTimeEntryCommandHandler(ITimeTrackingDb _db) : IRequestHandler<DeleteTimeEntryCommand, Unit>
 {
-    private readonly ITimeTrackingDb _db;
-
-    public DeleteTimeEntryCommandHandler(ITimeTrackingDb db) => _db = db;
-
     public async Task<Unit> Handle(DeleteTimeEntryCommand command, CancellationToken ct)
     {
         await TransactionRunner.RunAsync(_db, async (session, token) =>

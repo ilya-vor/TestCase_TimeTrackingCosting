@@ -18,25 +18,20 @@ public class GetProjectsQuery : IRequest<List<ProjectDto>>
 {
 }
 
-public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, List<ProjectDto>>
+public class GetProjectsQueryHandler(ITimeTrackingDb _db) : IRequestHandler<GetProjectsQuery, List<ProjectDto>>
 {
-    private readonly ITimeTrackingDb _db;
-
-    public GetProjectsQueryHandler(ITimeTrackingDb db) => _db = db;
-
     public async Task<List<ProjectDto>> Handle(GetProjectsQuery request, CancellationToken ct)
     {
-        var projects = await _db.Projects.Find(Builders<Project>.Filter.Empty)
-            .SortBy(p => p.Code)
-            .ToListAsync(ct);
-
-        return projects.Select(p => new ProjectDto
-        {
-            Id = p.Id,
-            Code = p.Code,
-            Name = p.Name,
-            Start = p.Start,
-            End = p.End
-        }).ToList();
+        return (await _db.Projects.Find(Builders<Project>.Filter.Empty)
+                .SortBy(p => p.Code)
+                .ToListAsync(ct))
+            .Select(p => new ProjectDto
+            {
+                Id = p.Id,
+                Code = p.Code,
+                Name = p.Name,
+                Start = p.Start,
+                End = p.End
+            }).ToList();
     }
 }

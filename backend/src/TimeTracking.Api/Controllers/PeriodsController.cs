@@ -6,12 +6,8 @@ namespace TimeTracking.Api.Controllers;
 
 [ApiController]
 [Route("api/periods")]
-public class PeriodsController : ControllerBase
+public class PeriodsController(IMediator _mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public PeriodsController(IMediator mediator) => _mediator = mediator;
-
     [HttpPost("close")]
     public async Task<IActionResult> Close([FromBody] ClosePeriodCommand command)
     {

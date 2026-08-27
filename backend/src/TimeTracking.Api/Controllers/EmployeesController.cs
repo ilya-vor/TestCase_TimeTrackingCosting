@@ -6,12 +6,8 @@ namespace TimeTracking.Api.Controllers;
 
 [ApiController]
 [Route("api/employees")]
-public class EmployeesController : ControllerBase
+public class EmployeesController(IMediator _mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public EmployeesController(IMediator mediator) => _mediator = mediator;
-
     [HttpGet]
     public Task<List<EmployeeDto>> List()
         => _mediator.Send(new GetEmployeesQuery());

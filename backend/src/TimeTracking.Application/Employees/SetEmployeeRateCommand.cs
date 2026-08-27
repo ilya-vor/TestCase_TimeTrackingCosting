@@ -7,7 +7,7 @@ using TimeTracking.Domain;
 namespace TimeTracking.Application.Employees;
 
 /// <summary>
-/// Задание не описывает API для смены ставок, но сценарий приёмочной проверки № 8
+/// Задание не описывает API для смены ставок, но сценарий приёмочной проверки 8
 /// («изменить ставку задним числом и перестроить отчёт») требует такого изменения.
 /// Upsert по дате начала: если ставка на дату уже есть — меняем её значение, иначе добавляем новую.
 /// </summary>
@@ -28,12 +28,8 @@ public class SetEmployeeRateCommandValidator : AbstractValidator<SetEmployeeRate
     }
 }
 
-public class SetEmployeeRateCommandHandler : IRequestHandler<SetEmployeeRateCommand, Unit>
+public class SetEmployeeRateCommandHandler(ITimeTrackingDb _db) : IRequestHandler<SetEmployeeRateCommand, Unit>
 {
-    private readonly ITimeTrackingDb _db;
-
-    public SetEmployeeRateCommandHandler(ITimeTrackingDb db) => _db = db;
-
     public async Task<Unit> Handle(SetEmployeeRateCommand command, CancellationToken ct)
     {
         var from = Dates.CalendarDateToUtc(command.From);

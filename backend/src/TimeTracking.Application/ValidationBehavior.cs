@@ -4,7 +4,7 @@ using MediatR;
 namespace TimeTracking.Application;
 
 /// <summary>
-/// Пайплайн-поведение MediatR: валидация входных данных (форма/структура) отделена
+/// Валидация входных данных (форма/структура) отделена
 /// от бизнес-правил, которые выполняются уже внутри обработчиков.
 /// </summary>
 public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>

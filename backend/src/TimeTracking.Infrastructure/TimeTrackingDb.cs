@@ -4,17 +4,11 @@ using TimeTracking.Domain;
 
 namespace TimeTracking.Infrastructure;
 
-public class TimeTrackingDb : ITimeTrackingDb
+public class TimeTrackingDb(IMongoClient client, string databaseName) : ITimeTrackingDb
 {
-    private readonly IMongoDatabase _database;
+    private readonly IMongoDatabase _database = client.GetDatabase(databaseName);
 
-    public TimeTrackingDb(IMongoClient client, string databaseName)
-    {
-        Client = client;
-        _database = client.GetDatabase(databaseName);
-    }
-
-    public IMongoClient Client { get; }
+    public IMongoClient Client => client;
 
     public IMongoCollection<Employee> Employees => _database.GetCollection<Employee>("employees");
 

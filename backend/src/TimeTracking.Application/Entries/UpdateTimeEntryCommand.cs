@@ -3,18 +3,15 @@ using MediatR;
 
 namespace TimeTracking.Application.Entries;
 
-public class UpdateTimeEntryCommand : IRequest<TimeEntryRow>
+public record UpdateTimeEntryCommand(
+    int ExpectedVersion,
+    string EmployeeId,
+    string ProjectId,
+    DateTime Date,
+    double Hours,
+    string Comment) : IRequest<TimeEntryRow>
 {
     public string Id { get; set; } = string.Empty;
-
-    /// <summary>Версия, с которой клиент открыл запись (оптимистичная блокировка).</summary>
-    public int ExpectedVersion { get; set; }
-
-    public string EmployeeId { get; set; } = string.Empty;
-    public string ProjectId { get; set; } = string.Empty;
-    public DateTime Date { get; set; }
-    public double Hours { get; set; }
-    public string Comment { get; set; } = string.Empty;
 }
 
 public class UpdateTimeEntryCommandValidator : AbstractValidator<UpdateTimeEntryCommand>

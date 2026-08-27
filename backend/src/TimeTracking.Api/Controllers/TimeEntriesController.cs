@@ -6,12 +6,8 @@ namespace TimeTracking.Api.Controllers;
 
 [ApiController]
 [Route("api/time-entries")]
-public class TimeEntriesController : ControllerBase
+public class TimeEntriesController(IMediator _mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public TimeEntriesController(IMediator mediator) => _mediator = mediator;
-
     [HttpGet]
     public Task<TimeEntryPageResult> List(
         [FromQuery] int year,
@@ -36,10 +32,7 @@ public class TimeEntriesController : ControllerBase
 
     [HttpPost("{id}")]
     public Task<TimeEntryRow> Update(string id, [FromBody] UpdateTimeEntryCommand command)
-    {
-        command.Id = id;
-        return _mediator.Send(command);
-    }
+        => _mediator.Send(command with { Id = id });
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)

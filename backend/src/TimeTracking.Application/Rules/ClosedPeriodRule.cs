@@ -3,7 +3,9 @@ using TimeTracking.Domain;
 
 namespace TimeTracking.Application.Rules;
 
-/// <summary>Правило 4: в закрытом периоде записи нельзя создавать, изменять и удалять.</summary>
+/// <summary>
+/// Правило 4: в закрытом периоде записи нельзя создавать, изменять и удалять.
+/// </summary>
 public static class ClosedPeriodRule
 {
     public static bool IsClosed(IEnumerable<ClosedPeriod> periods, DateTime date)

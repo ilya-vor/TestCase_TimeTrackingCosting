@@ -11,7 +11,10 @@ public class ProjectReportRow
     public double Hours { get; set; }
     public decimal Amount { get; set; }
     public decimal Budget { get; set; }
-    /// <summary>Процент освоения бюджета. null, если бюджет равен нулю.</summary>
+
+    /// <summary>
+    /// Процент освоения бюджета. null, если бюджет равен нулю.
+    /// </summary>
     public decimal? Percent { get; set; }
     public bool Overspent { get; set; }
     public bool AtRisk { get; set; }

@@ -6,12 +6,8 @@ namespace TimeTracking.Api.Controllers;
 
 [ApiController]
 [Route("api/projects")]
-public class ProjectsController : ControllerBase
+public class ProjectsController(IMediator _mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public ProjectsController(IMediator mediator) => _mediator = mediator;
-
     [HttpGet]
     public Task<List<ProjectDto>> List()
         => _mediator.Send(new GetProjectsQuery());

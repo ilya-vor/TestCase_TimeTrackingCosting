@@ -2,7 +2,9 @@ using TimeTracking.Application.Common;
 
 namespace TimeTracking.Application.Rules;
 
-/// <summary>Правило 6: часы — положительные, кратные 0,5, не больше 24 за одну запись.</summary>
+/// <summary>
+/// Правило 6: часы — положительные, кратные 0,5, не больше 24 за одну запись.
+/// </summary>
 public static class EntryHoursRule
 {
     public const double MaxHoursPerEntry = 24;

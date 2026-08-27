@@ -16,23 +16,18 @@ public class GetEmployeesQuery : IRequest<List<EmployeeDto>>
 {
 }
 
-public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, List<EmployeeDto>>
+public class GetEmployeesQueryHandler(ITimeTrackingDb _db) : IRequestHandler<GetEmployeesQuery, List<EmployeeDto>>
 {
-    private readonly ITimeTrackingDb _db;
-
-    public GetEmployeesQueryHandler(ITimeTrackingDb db) => _db = db;
-
     public async Task<List<EmployeeDto>> Handle(GetEmployeesQuery request, CancellationToken ct)
     {
-        var employees = await _db.Employees.Find(Builders<Employee>.Filter.Empty)
-            .SortBy(e => e.Name)
-            .ToListAsync(ct);
-
-        return employees.Select(e => new EmployeeDto
-        {
-            Id = e.Id,
-            Name = e.Name,
-            Department = e.Department
-        }).ToList();
+        return (await _db.Employees.Find(Builders<Employee>.Filter.Empty)
+                .SortBy(e => e.Name)
+                .ToListAsync(ct))
+            .Select(e => new EmployeeDto
+            {
+                Id = e.Id,
+                Name = e.Name,
+                Department = e.Department
+            }).ToList();
     }
 }

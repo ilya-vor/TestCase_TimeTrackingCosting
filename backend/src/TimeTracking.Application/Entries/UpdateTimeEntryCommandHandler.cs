@@ -6,12 +6,8 @@ using TimeTracking.Domain;
 
 namespace TimeTracking.Application.Entries;
 
-public class UpdateTimeEntryCommandHandler : IRequestHandler<UpdateTimeEntryCommand, TimeEntryRow>
+public class UpdateTimeEntryCommandHandler(ITimeTrackingDb _db) : IRequestHandler<UpdateTimeEntryCommand, TimeEntryRow>
 {
-    private readonly ITimeTrackingDb _db;
-
-    public UpdateTimeEntryCommandHandler(ITimeTrackingDb db) => _db = db;
-
     public async Task<TimeEntryRow> Handle(UpdateTimeEntryCommand command, CancellationToken ct)
     {
         var date = Dates.CalendarDateToUtc(command.Date);
@@ -46,7 +42,7 @@ public class UpdateTimeEntryCommandHandler : IRequestHandler<UpdateTimeEntryComm
             EmployeeRates.RequireOn(employee.Rates, date, employee.Name);
 
             // Дневной лимит на новую дату: старая запись с этой даты может уйти (минусуем её часы).
-            var dayTotal = await EntryService.SumDayHoursAsync(_db, session, employee.Id, date, token);
+            var dayTotal = await DayHoursAggregator.SumForDayAsync(_db, session, employee.Id, date, token);
             var oldContribution = entry.EmployeeId == employee.Id && entry.Date.Date == date ? entry.Hours : 0;
             DayHoursLimitRule.ValidateDayTotal(dayTotal - oldContribution, command.Hours);
 
@@ -63,7 +59,7 @@ public class UpdateTimeEntryCommandHandler : IRequestHandler<UpdateTimeEntryComm
             updated = entry;
         }, ct);
 
-        return await EntryService.BuildRowAsync(_db, null, updated!, ct);
+        return await TimeEntryRowProjector.BuildWithLookupsAsync(_db, null, updated!, ct);
     }
 }
 

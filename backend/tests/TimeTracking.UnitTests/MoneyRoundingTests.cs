@@ -3,7 +3,9 @@ using TimeTracking.Application.Common;
 
 namespace TimeTracking.UnitTests;
 
-/// <summary>Правило 7: деньги — decimal, округление до копеек.</summary>
+/// <summary>
+/// Правило 7: деньги — decimal, округление до копеек
+/// </summary>
 public class MoneyRoundingTests
 {
     [Theory]
