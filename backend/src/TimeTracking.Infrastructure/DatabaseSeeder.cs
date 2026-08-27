@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 using MongoDB.Driver;
 using TimeTracking.Application.Common;
 using TimeTracking.Domain;
@@ -97,5 +98,37 @@ public static class DatabaseSeeder
         await db.Employees.InsertManyAsync(employees, cancellationToken: ct);
         await db.Projects.InsertManyAsync(projects, cancellationToken: ct);
         await db.TimeEntries.InsertManyAsync(entries, cancellationToken: ct);
+    }
+
+    /// <summary>
+    /// Пересчитывает day_counters из time_entries (записи сидятся напрямую, в обход счётчика).
+    /// Вызывается на старте после сида, чтобы счётчик был консистентен.
+    /// </summary>
+    public static async Task RebuildDayCountersAsync(ITimeTrackingDb db, CancellationToken ct)
+    {
+        await db.DayCounters.DeleteManyAsync(FilterDefinition<DayCounter>.Empty, cancellationToken: ct);
+
+        var pipeline = new BsonDocument[]
+        {
+            new BsonDocument("$group", new BsonDocument
+            {
+                { "_id", new BsonDocument { { "employeeId", "$employeeId" }, { "date", "$date" } } },
+                { "hours", new BsonDocument("$sum", "$hours") }
+            })
+        };
+
+        var cursor = await db.TimeEntries.AggregateAsync<BsonDocument>(pipeline, cancellationToken: ct);
+        var docs = await MongoCursorHelpers.ToListAsync(cursor, ct);
+        if (docs.Count == 0)
+            return;
+
+        var counters = docs.Select(d => new DayCounter
+        {
+            EmployeeId = d["_id"]["employeeId"].AsString,
+            Date = d["_id"]["date"].AsBsonDateTime.ToUniversalTime(),
+            Hours = d["hours"].ToDouble()
+        }).ToList();
+
+        await db.DayCounters.InsertManyAsync(counters, cancellationToken: ct);
     }
 }

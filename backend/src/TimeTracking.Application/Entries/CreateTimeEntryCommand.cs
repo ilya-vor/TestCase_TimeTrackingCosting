@@ -18,7 +18,6 @@ public class CreateTimeEntryCommandValidator : AbstractValidator<CreateTimeEntry
     {
         RuleFor(x => x.EmployeeId).NotEmpty().WithMessage("Сотрудник обязателен.");
         RuleFor(x => x.ProjectId).NotEmpty().WithMessage("Проект обязателен.");
-        RuleFor(x => x.Hours).GreaterThan(0).WithMessage("Часы должны быть положительным числом.");
         RuleFor(x => x.Date).Must(d => d != default).WithMessage("Дата обязательна.");
     }
 }

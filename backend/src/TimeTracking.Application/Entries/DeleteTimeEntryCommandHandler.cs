@@ -19,6 +19,7 @@ public class DeleteTimeEntryCommandHandler(ITimeTrackingDb _db) : IRequestHandle
                 .Find(session, p => p.Year == entry.Date.Year && p.Month == entry.Date.Month).ToListAsync(token);
             ClosedPeriodRule.ThrowIfClosed(closedPeriods, entry.Date);
 
+            await DayCounterService.AddHoursAsync(_db, session, entry.EmployeeId, entry.Date, -entry.Hours, token);
             await _db.TimeEntries.DeleteOneAsync(session, e => e.Id == command.Id, cancellationToken: token);
         }, ct);
 

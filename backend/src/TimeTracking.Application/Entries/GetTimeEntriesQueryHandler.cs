@@ -22,9 +22,10 @@ public class GetTimeEntriesQueryHandler(ITimeTrackingDb _db) : IRequestHandler<G
 
         var totalCount = await _db.TimeEntries.CountDocumentsAsync(filter, cancellationToken: ct);
 
-        // В память попадает только страница.
+        // В память попадает только страница. Сортировка по _id — стабильный tiebreaker
+        // для skip/limit-пагинации (иначе записи с одной датой могут «прыгать» между страницами).
         var entries = await _db.TimeEntries.Find(filter)
-            .Sort(Builders<TimeEntry>.Sort.Ascending(e => e.Date))
+            .Sort(Builders<TimeEntry>.Sort.Ascending(e => e.Date).Ascending(e => e.Id))
             .Skip((query.Page - 1) * query.PageSize)
             .Limit(query.PageSize)
             .ToListAsync(ct);
@@ -57,7 +58,7 @@ public class GetTimeEntriesQueryHandler(ITimeTrackingDb _db) : IRequestHandler<G
         return new TimeEntryPageResult
         {
             Items = items,
-            TotalCount = (int)totalCount,
+            TotalCount = totalCount,
             Page = query.Page,
             PageSize = query.PageSize,
             TotalHours = totals.hours,

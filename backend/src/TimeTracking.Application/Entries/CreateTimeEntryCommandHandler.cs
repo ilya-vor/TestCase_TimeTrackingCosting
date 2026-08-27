@@ -14,6 +14,7 @@ public class CreateTimeEntryCommandHandler(ITimeTrackingDb _db) : IRequestHandle
         EntryHoursRule.Validate(command.Hours);
 
         TimeEntry? created = null;
+        decimal rate = 0m;
 
         await TransactionRunner.RunAsync(_db, async (session, token) =>
         {
@@ -27,10 +28,8 @@ public class CreateTimeEntryCommandHandler(ITimeTrackingDb _db) : IRequestHandle
             ClosedPeriodRule.ThrowIfClosed(closedPeriods, date);
 
             ProjectPeriodRule.ThrowIfOutside(date, project.Start, project.End);
-            EmployeeRates.RequireOn(employee.Rates, date, employee.Name);
-
-            var dayTotal = await DayHoursAggregator.SumForDayAsync(_db, session, employee.Id, date, token);
-            DayHoursLimitRule.ValidateDayTotal(dayTotal, command.Hours);
+            rate = EmployeeRates.RequireOn(employee.Rates, date, employee.Name);
+            await DayCounterService.AddHoursAsync(_db, session, employee.Id, date, command.Hours, token);
 
             var now = DateTime.UtcNow;
             created = new TimeEntry
@@ -50,7 +49,7 @@ public class CreateTimeEntryCommandHandler(ITimeTrackingDb _db) : IRequestHandle
             await _db.TimeEntries.InsertOneAsync(session, created, cancellationToken: token);
         }, ct);
 
-        return await TimeEntryRowProjector.BuildWithLookupsAsync(_db, null, created!, ct);
+        return await TimeEntryRowProjector.BuildWithLookupsAsync(_db, null, created!, ct, rate);
     }
 }
 

@@ -14,6 +14,7 @@ public class UpdateTimeEntryCommandHandler(ITimeTrackingDb _db) : IRequestHandle
         EntryHoursRule.Validate(command.Hours);
 
         TimeEntry? updated = null;
+        decimal rate = 0m;
 
         await TransactionRunner.RunAsync(_db, async (session, token) =>
         {
@@ -39,12 +40,11 @@ public class UpdateTimeEntryCommandHandler(ITimeTrackingDb _db) : IRequestHandle
             ClosedPeriodRule.ThrowIfClosed(newClosed, date);
 
             ProjectPeriodRule.ThrowIfOutside(date, project.Start, project.End);
-            EmployeeRates.RequireOn(employee.Rates, date, employee.Name);
+            rate = EmployeeRates.RequireOn(employee.Rates, date, employee.Name);
 
-            // Дневной лимит на новую дату: старая запись с этой даты может уйти (минусуем её часы).
-            var dayTotal = await DayHoursAggregator.SumForDayAsync(_db, session, employee.Id, date, token);
-            var oldContribution = entry.EmployeeId == employee.Id && entry.Date.Date == date ? entry.Hours : 0;
-            DayHoursLimitRule.ValidateDayTotal(dayTotal - oldContribution, command.Hours);
+            // Счётчик: убираем вклад старой записи, добавляем новую — лимит проверяется при инкременте.
+            await DayCounterService.AddHoursAsync(_db, session, entry.EmployeeId, entry.Date, -entry.Hours, token);
+            await DayCounterService.AddHoursAsync(_db, session, employee.Id, date, command.Hours, token);
 
             entry.EmployeeId = employee.Id;
             entry.ProjectId = project.Id;
@@ -59,7 +59,7 @@ public class UpdateTimeEntryCommandHandler(ITimeTrackingDb _db) : IRequestHandle
             updated = entry;
         }, ct);
 
-        return await TimeEntryRowProjector.BuildWithLookupsAsync(_db, null, updated!, ct);
+        return await TimeEntryRowProjector.BuildWithLookupsAsync(_db, null, updated!, ct, rate);
     }
 }
 

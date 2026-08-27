@@ -15,6 +15,7 @@ public class MongoInitializer (IServiceProvider _services, ILogger<MongoInitiali
         var db = _services.GetRequiredService<ITimeTrackingDb>();
         await IndexSetup.CreateIndexesAsync(db, ct);
         await DatabaseSeeder.SeedIfEmptyAsync(db, ct);
+        await DatabaseSeeder.RebuildDayCountersAsync(db, ct);
         _logger.LogInformation("MongoDB ready: индексы созданы, тестовые данные на месте.");
     }
 

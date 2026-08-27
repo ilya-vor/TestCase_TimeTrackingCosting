@@ -32,10 +32,14 @@ internal static class EntryTotalsAggregator
             new BsonDocument("$project", new BsonDocument
             {
                 { "hours", 1 },
-                { "cost", new BsonDocument("$multiply", new BsonArray
+                { "cost", new BsonDocument("$round", new BsonArray
                     {
-                        "$hours",
-                        new BsonDocument("$ifNull", new BsonArray { "$rate.rate", 0 })
+                        new BsonDocument("$multiply", new BsonArray
+                        {
+                            "$hours",
+                            new BsonDocument("$ifNull", new BsonArray { "$rate.rate", 0 })
+                        }),
+                        2
                     })
                 }
             }),

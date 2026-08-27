@@ -22,7 +22,6 @@ public class UpdateTimeEntryCommandValidator : AbstractValidator<UpdateTimeEntry
         RuleFor(x => x.ExpectedVersion).GreaterThanOrEqualTo(1).WithMessage("Версия записи не может быть меньше 1.");
         RuleFor(x => x.EmployeeId).NotEmpty().WithMessage("Сотрудник обязателен.");
         RuleFor(x => x.ProjectId).NotEmpty().WithMessage("Проект обязателен.");
-        RuleFor(x => x.Hours).GreaterThan(0).WithMessage("Часы должны быть положительным числом.");
         RuleFor(x => x.Date).Must(d => d != default).WithMessage("Дата обязательна.");
     }
 }

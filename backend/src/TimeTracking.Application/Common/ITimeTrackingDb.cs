@@ -16,5 +16,7 @@ public interface ITimeTrackingDb
 
     IMongoCollection<TimeEntry> TimeEntries { get; }
 
+    IMongoCollection<DayCounter> DayCounters { get; }
+
     IMongoCollection<ClosedPeriod> ClosedPeriods { get; }
 }

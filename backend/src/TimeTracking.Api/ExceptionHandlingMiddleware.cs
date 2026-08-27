@@ -16,6 +16,12 @@ public class ExceptionHandlingMiddleware(RequestDelegate _next, ILogger<Exceptio
         {
             await _next(context);
         }
+        catch (OperationCanceledException)
+        {
+            // Клиент отменил запрос — это не ошибка сервера, ответ уже не нужен.
+            if (!context.Response.HasStarted)
+                context.Response.StatusCode = StatusCodes.Status499ClientClosedRequest;
+        }
         catch (BusinessRuleException ex)
         {
             await WriteErrorAsync(context, ex.StatusCode, ex.Code, ex.Message);
@@ -24,6 +30,13 @@ public class ExceptionHandlingMiddleware(RequestDelegate _next, ILogger<Exceptio
         {
             var message = string.Join("; ", ex.Errors.Select(e => e.ErrorMessage));
             await WriteErrorAsync(context, StatusCodes.Status400BadRequest, ErrorCodes.ValidationError, message);
+        }
+        catch (BadHttpRequestException ex)
+        {
+            // Битый JSON / нечитаемое тело запроса — это 400, а не 500.
+            _logger.LogInformation(ex, "Некорректное тело запроса");
+            await WriteErrorAsync(context, StatusCodes.Status400BadRequest, ErrorCodes.ValidationError,
+                "Некорректный формат тела запроса.");
         }
         catch (Exception ex)
         {
@@ -34,6 +47,9 @@ public class ExceptionHandlingMiddleware(RequestDelegate _next, ILogger<Exceptio
 
     private static async Task WriteErrorAsync(HttpContext context, int status, string code, string message)
     {
+        if (context.Response.HasStarted)
+            return;
+
         context.Response.StatusCode = status;
         context.Response.ContentType = "application/json; charset=utf-8";
         await context.Response.WriteAsync(JsonSerializer.Serialize(new { code, message }));

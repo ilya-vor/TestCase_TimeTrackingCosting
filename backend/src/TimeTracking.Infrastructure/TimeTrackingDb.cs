@@ -16,5 +16,7 @@ public class TimeTrackingDb(IMongoClient client, string databaseName) : ITimeTra
 
     public IMongoCollection<TimeEntry> TimeEntries => _database.GetCollection<TimeEntry>("time_entries");
 
+    public IMongoCollection<DayCounter> DayCounters => _database.GetCollection<DayCounter>("day_counters");
+
     public IMongoCollection<ClosedPeriod> ClosedPeriods => _database.GetCollection<ClosedPeriod>("closed_periods");
 }
