@@ -8,7 +8,7 @@
 Требуется Docker с Docker Compose. Один запуск поднимает MongoDB (replica set),
 backend API и фронтенд, и сам наполняет базу тестовыми данными из задания.
 
-1. `git clone <repo> && cd part2`
+1. `git clone <repo> && cd TestCase_TimeTrackingCosting`
 2. `docker compose up --build`
 
 ### Запуск без Docker (для разработки)
